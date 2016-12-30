@@ -21,6 +21,6 @@ install_backplane() {
 install_backplane
 
 cat <<-EOF > $build/.profile.d/backplane.sh
-BACKPLANE_LABELS="\$BACKPLANE_LABELS heroku:true"
+BACKPLANE_LABELS="\$BACKPLANE_LABELS, heroku=true"
 \$HOME/bin/backplane connect "\$BACKPLANE_LABELS" http://127.0.0.1:\$PORT &
 EOF
