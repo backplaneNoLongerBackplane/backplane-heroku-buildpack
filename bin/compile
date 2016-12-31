@@ -3,8 +3,6 @@
 set -e
 set -x
 
-echo COMPILE
-
 build=$1
 cache=$2
 
