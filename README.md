@@ -27,7 +27,7 @@ Add the Backplane buildpack to the list of buildpacks for your Heroku app and
 configure:
 
 	$ heroku buildpacks:add https://github.com/backplaneio/backplane-heroku-buildpack
-	$ heroku config:set BACKPLANE_LABELS="some:label" BACKPLANE_TOKEN=$(backplane generate env | grep TOKEN)
+	$ heroku config:set BACKPLANE_LABELS="some:label" $(backplane generate env | grep TOKEN)
 
 You are now ready to deploy:
 
