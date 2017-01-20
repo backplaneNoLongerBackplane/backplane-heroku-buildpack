@@ -41,3 +41,17 @@ You are now ready to deploy:
 Test http://myendpoint.com.
 
 For more information on setting up backplane see `backplane help`.
+
+## Known Issues
+
+### Fetch Error
+
+At times Heroku may report:
+
+	Push rejected, failed to detect set buildpack https://github.com/backplaneio/backplane-heroku-buildpack
+
+This happens intermittently without changes to the buildpack and "fixes itself"
+after some time due to what we believe to be issues on Heroku's end. Please
+contact support@backplane.io and also file a ticket with [Heroku
+support](https://help.heroku.com) the issue does not resolve itself in a timely
+manner.
