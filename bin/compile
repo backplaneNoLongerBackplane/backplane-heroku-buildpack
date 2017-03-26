@@ -8,6 +8,7 @@ cache=$2
 
 mkdir -p $build/bin
 mkdir -p $build/.profile.d
+mkdir -p $cache
 
 install_backplane() {
 	echo "----> Installing Backplane Agent"
