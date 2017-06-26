@@ -26,7 +26,7 @@ If you haven't already created a route now is a good time to do so:
 Add the Backplane buildpack to the list of buildpacks for your Heroku app and
 configure:
 
-	$ heroku buildpacks:add https://github.com/backplaneio/backplane-heroku-buildpack
+	$ heroku buildpacks:add https://github.com/backplane/backplane-heroku-buildpack
 	$ heroku config:set BACKPLANE_LABELS="some:label" $(backplane generate env | grep TOKEN)
 
 You are now ready to deploy:
@@ -48,7 +48,7 @@ For more information on setting up backplane see `backplane help`.
 
 At times Heroku may report:
 
-	Push rejected, failed to detect set buildpack https://github.com/backplaneio/backplane-heroku-buildpack
+	Push rejected, failed to detect set buildpack https://github.com/backplane/backplane-heroku-buildpack
 
 This happens intermittently without changes to the buildpack and "fixes itself"
 after some time due to what we believe to be issues on Heroku's end. Please
