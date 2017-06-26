@@ -1,3 +1,3 @@
 #!/bin/sh
-echo "-----> Backplane backend detected."
+echo "Backplane"
 exit 0

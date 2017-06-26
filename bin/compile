@@ -1,16 +1,16 @@
 #!/bin/sh
 
 set -e
-set -x
 
 build=$1
 cache=$2
 
 mkdir -p $build/bin
 mkdir -p $build/.profile.d
+mkdir -p $cache
 
 install_backplane() {
-	echo "----> Installing Backplane Agent"
+	echo "-----> Installing Backplane Agent"
 	name=backplane-stable-linux-amd64.tgz
 	curl -s https://bin.equinox.io/c/jWahGASjoRq/$name > $cache/$name
 	tar xf $cache/$name -C $build/bin
@@ -18,7 +18,7 @@ install_backplane() {
 
 install_backplane
 
-echo "----> Writing .profile.d/backplane.sh"
+echo "-----> Writing .profile.d/backplane.sh"
 cat <<-EOF > $build/.profile.d/backplane.sh
 BACKPLANE_LABELS="\$BACKPLANE_LABELS, heroku=true"
 \$HOME/bin/backplane connect "\$BACKPLANE_LABELS" http://127.0.0.1:\$PORT &
