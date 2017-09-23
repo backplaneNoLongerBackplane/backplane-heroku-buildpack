@@ -4,7 +4,6 @@ set -e
 
 build=$1
 cache=$2
-CURRENT_PROCESS_TYPE=${DYNO%.*}
 
 mkdir -p $build/bin
 mkdir -p $build/.profile.d
@@ -19,8 +18,10 @@ install_backplane() {
 
 install_backplane
 
+echo "-----> Writing .profile.d/backplane.sh"
+cat <<-EOF > $build/.profile.d/backplane.sh
+CURRENT_PROCESS_TYPE=${DYNO%.*}
 echo "-----> Current process type: $CURRENT_PROCESS_TYPE"
-
 if [ -z ${BACKPLANE_IGNORE_PROCESS_TYPE+x} ]; then
   echo "-----> Backplane Agent should run on any process type."
   echo "       Use enviroment variable BACKPLANE_IGNORE_PROCESS_TYPE to ignore process types.";
@@ -35,10 +36,7 @@ else
       exit 0
     fi
   done
+  BACKPLANE_LABELS="\$BACKPLANE_LABELS, heroku=true"
+  \$HOME/bin/backplane connect "\$BACKPLANE_LABELS" http://127.0.0.1:\$PORT &
 fi
-
-echo "-----> Writing .profile.d/backplane.sh"
-cat <<-EOF > $build/.profile.d/backplane.sh
-BACKPLANE_LABELS="\$BACKPLANE_LABELS, heroku=true"
-\$HOME/bin/backplane connect "\$BACKPLANE_LABELS" http://127.0.0.1:\$PORT &
 EOF
