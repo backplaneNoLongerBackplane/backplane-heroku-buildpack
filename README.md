@@ -19,9 +19,13 @@ authentication token from BACKPLANE_TOKEN.
 
 ## Use
 
+### Setup backplane routing
+
 If you haven't already created a route now is a good time to do so:
 
 	$ backplane route myendpoint.com "some=label"
+
+### Add the backplane buildpack
 
 Add the Backplane buildpack to the list of buildpacks for your Heroku app and
 configure:
@@ -41,6 +45,16 @@ You are now ready to deploy:
 Test http://myendpoint.com.
 
 For more information on setting up backplane see `backplane help`.
+
+### Ignore process types
+
+Use enviroment variable BACKPLANE_IGNORE_PROCESS_TYPE to ignore process types
+which do not serve http traffic.
+
+Example:
+
+	$ heroku config:set BACKPLANE_IGNORE_PROCESS_TYPE=run,worker,jobqueue
+
 
 ## Known Issues
 

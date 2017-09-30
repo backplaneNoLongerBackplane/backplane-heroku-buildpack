@@ -20,6 +20,24 @@ install_backplane
 
 echo "-----> Writing .profile.d/backplane.sh"
 cat <<-EOF > $build/.profile.d/backplane.sh
+CURRENT_PROCESS_TYPE=\${DYNO%.*}
+echo "-----> Current process type: \$CURRENT_PROCESS_TYPE"
+if [ -z \${BACKPLANE_IGNORE_PROCESS_TYPE+x} ]; then
+  echo "-----> Backplane Agent should run on any process type."
+  echo "       Use enviroment variable BACKPLANE_IGNORE_PROCESS_TYPE to ignore process types.";
+  echo "       Example: BACKPLANE_IGNORE_PROCESS_TYPE=run,worker,jobqueue";
+else
+  echo "-----> Backplane Agent should not run on process type: \$BACKPLANE_IGNORE_PROCESS_TYPE";
+  IFS=', ' read -r -a array <<< "\$BACKPLANE_IGNORE_PROCESS_TYPE"
+  for element in "\${array[@]}"
+  do
+    if [ "\$element" == "\$CURRENT_PROCESS_TYPE" ]; then
+      echo "-----> Skipping start of Backplane Agent!"
+      exit 0
+    fi
+  done
+fi
 BACKPLANE_LABELS="\$BACKPLANE_LABELS, heroku=true"
+echo "-----> Starting Backplane Agent for \$BACKPLANE_LABELS"
 \$HOME/bin/backplane connect "\$BACKPLANE_LABELS" http://127.0.0.1:\$PORT &
 EOF
