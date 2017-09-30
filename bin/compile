@@ -36,8 +36,8 @@ else
       exit 0
     fi
   done
-  BACKPLANE_LABELS="\$BACKPLANE_LABELS, heroku=true"
-  echo "-----> Starting Backplane Agent for \$BACKPLANE_LABELS"
-  \$HOME/bin/backplane connect "\$BACKPLANE_LABELS" http://127.0.0.1:\$PORT &
 fi
+BACKPLANE_LABELS="\$BACKPLANE_LABELS, heroku=true"
+echo "-----> Starting Backplane Agent for \$BACKPLANE_LABELS"
+\$HOME/bin/backplane connect "\$BACKPLANE_LABELS" http://127.0.0.1:\$PORT &
 EOF
