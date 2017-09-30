@@ -48,7 +48,8 @@ For more information on setting up backplane see `backplane help`.
 
 ### Ignore process types
 
-Use enviroment variable BACKPLANE_IGNORE_PROCESS_TYPE to ignore process types.
+Use enviroment variable BACKPLANE_IGNORE_PROCESS_TYPE to ignore process types
+which do not serve http traffic.
 
 Example:
 
