@@ -24,10 +24,10 @@ If you haven't already created a route now is a good time to do so:
 	$ backplane route myendpoint.com "some=label"
 
 Add the Backplane buildpack to the list of buildpacks for your Heroku app and
-configure:
+configure. Note you'll want to replace your endpoint hostname here in the BACKPLANE_LABELS.
 
 	$ heroku buildpacks:add https://github.com/backplane/backplane-heroku-buildpack
-	$ heroku config:set BACKPLANE_LABELS="some=label" $(backplane generate env | grep TOKEN)
+	$ heroku config:set BACKPLANE_LABELS="endpoint=some-host-42.backplaneapp.io,release=v1,some=label" $(backplane generate env | grep TOKEN)
 
 You are now ready to deploy:
 
