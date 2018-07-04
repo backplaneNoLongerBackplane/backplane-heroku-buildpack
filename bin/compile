@@ -41,16 +41,21 @@ echo ""
 
 echo "-----> Writing .profile.d/backplane.sh"
 cat <<-EOF > $buildDir/.profile.d/backplane.sh
+allowed="no"
 CURRENT_PROCESS_TYPE=\${DYNO%.*}
 IFS=", " read -r -a array <<< "$whitelist"
 for element in "\${array[@]}"
 do
   if [ "\$element" == "\$CURRENT_PROCESS_TYPE" ]; then
-    echo "[backplane] Starting Backplane Agent for \"$labels\""
-    \$HOME/bin/backplane connect "$labels" http://127.0.0.1:\$PORT &
-    echo "[backplane] Backplane Agent running"
-    exit 0
+    allowed="yes"
+    break
   fi
 done
-echo '[backplane] Skipping start of Backplane Agent'
+if [ "\$allowed" == "yes" ]; then
+  echo "[backplane] Starting Backplane Agent for \"$labels\""
+  \$HOME/bin/backplane connect "$labels" http://127.0.0.1:\$PORT &
+  echo "[backplane] Backplane Agent running"
+else
+  echo '[backplane] Skipping start of Backplane Agent'
+fi
 EOF
