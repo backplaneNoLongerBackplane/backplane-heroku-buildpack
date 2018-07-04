@@ -2,41 +2,44 @@
 
 set -e
 
-build=$1
-cache=$2
+buildDir=$1
+cacheDir=$2
+envDir=$3
 
-mkdir -p $build/bin
-mkdir -p $build/.profile.d
-mkdir -p $cache
+mkdir -p $buildDir/bin
+mkdir -p $buildDir/.profile.d
+mkdir -p $cacheDir
+mkdir -p $envDir
 
 install_backplane() {
   echo "-----> Installing Backplane Agent"
   name=backplane-stable-linux-amd64.tgz
-  curl -s https://bin.equinox.io/c/jWahGASjoRq/$name > $cache/$name
-  tar xf $cache/$name -C $build/bin
+  curl -s https://bin.equinox.io/c/jWahGASjoRq/$name > $cacheDir/$name
+  tar xf $cacheDir/$name -C $buildDir/bin
 }
 
 install_backplane
 
-echo "-----> Writing .profile.d/backplane.sh"
-cat <<-EOF > $build/.profile.d/backplane.sh
-
-BACKPLANE_ALLOW_PROCESS_TYPE=\${BACKPLANE_ALLOW_PROCESS_TYPE:-web,www}
 echo "-----> Backplane Agent whitelists 'web' and 'www' process types by default."
-echo "       Use enviroment variable BACKPLANE_ALLOW_PROCESS_TYPE to whitelist alternate process types.";
-echo "       Example: BACKPLANE_ALLOW_PROCESS_TYPE=internal,external";
-echo "-----> Backplane Agent whitelisted process types: \$BACKPLANE_ALLOW_PROCESS_TYPE";
-
-IFS=", " read -r -a array <<< "\$BACKPLANE_ALLOW_PROCESS_TYPE"
+echo "       Use enviroment variable BACKPLANE_ALLOW_PROCESS_TYPES to whitelist alternate process types."
+echo "       Example: BACKPLANE_ALLOW_PROCESS_TYPES=internal,external"
+echo ""
+echo "-----> Backplane Agent whitelisted process types: $(cat $envDir/BACKPLANE_ALLOW_PROCESS_TYPES)"
+echo ""
+echo "-----> Backplane labels: $(cat $envDir/BACKPLANE_LABELS)"
+echo ""
+echo "-----> Writing .profile.d/backplane.sh"
+cat <<-EOF > $buildDir/.profile.d/backplane.sh
+BACKPLANE_ALLOW_PROCESS_TYPES=\${BACKPLANE_ALLOW_PROCESS_TYPES:-web,www}
+IFS=", " read -r -a array <<< "\$BACKPLANE_ALLOW_PROCESS_TYPES"
 for element in "\${array[@]}"
 do
   if [ "\$element" == "\$CURRENT_PROCESS_TYPE" ]; then
-    echo "-----> Starting Backplane Agent for \$BACKPLANE_LABELS"
+    echo "[backplane] Starting Backplane Agent for \$BACKPLANE_LABELS"
     BACKPLANE_LABELS="\$BACKPLANE_LABELS, heroku=true"
     \$HOME/bin/backplane connect "\$BACKPLANE_LABELS" http://127.0.0.1:\$PORT &
     exit 0
   fi
 done
-
-echo '-----> Skipping start of Backplane Agent!'
+echo '[backplane] Skipping start of Backplane Agent'
 EOF

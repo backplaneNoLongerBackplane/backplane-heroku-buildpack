@@ -47,13 +47,13 @@ For more information on setting up backplane see `backplane help`.
 
 ### Whitelist process types
 
-Use enviroment variable `BACKPLANE_ALLOW_PROCESS_TYPE` to whitelist process types
+Use enviroment variable `BACKPLANE_ALLOW_PROCESS_TYPES` to whitelist process types
 which serve http traffic. If left unset, the process types 'web' and 'www' will
 be whitelisted by default.
 
 Example:
 
-    $ heroku config:set BACKPLANE_ALLOW_PROCESS_TYPE=internalweb,externalweb
+    $ heroku config:set BACKPLANE_ALLOW_PROCESS_TYPES=internalweb,externalweb
 
 ## Known Issues
 
