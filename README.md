@@ -42,6 +42,17 @@ Test http://myendpoint.com.
 
 For more information on setting up backplane see `backplane help`.
 
+### Multiple web server process types
+
+In order to route traffic to the correct dynos you can apply unique labels to a process type
+by using the `BACKPLANE_LABELS_<proc>` environment variable. Only the backplane agents running
+on dynos for the `<proc>` process type will apply these labels. Note: the labels from
+`BACKPLANE_LABELS` will also be applied universally across all whitelisted process types.
+
+Example:
+
+    $ heroku config:set BACKPLANE_LABELS_externalweb="endpoint=external.myendpoint.com"
+
 ## Known Issues
 
 ### Fetch Error

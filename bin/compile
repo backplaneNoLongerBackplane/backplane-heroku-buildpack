@@ -18,8 +18,18 @@ install_backplane() {
 
 install_backplane
 
+echo "-----> Backplane Agent sources labels from the enviroment varaible BACKPLANE_LABELS by default."
+echo "       Add unique labels for each process listed in the Procfile using BACKPLANE_LABELS_<proc>."
+echo "       Example: BACKPLANE_LABELS_web=\"endpoint=www.mydomain.com\""
+
 echo "-----> Writing .profile.d/backplane.sh"
 cat <<-EOF > $build/.profile.d/backplane.sh
+CURRENT_PROCESS_TYPE=\${DYNO%.*}
+BACKPLANE_LABELS_proc=BACKPLANE_LABELS_\${CURRENT_PROCESS_TYPE}
+if [ -n \${!BACKPLANE_LABELS_proc+x} ]; then
+  BACKPLANE_LABELS="\$BACKPLANE_LABELS, \${!BACKPLANE_LABELS_proc}"
+fi
+
 BACKPLANE_LABELS="\$BACKPLANE_LABELS, heroku=true"
 \$HOME/bin/backplane connect "\$BACKPLANE_LABELS" http://127.0.0.1:\$PORT &
 EOF
