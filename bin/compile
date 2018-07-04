@@ -10,16 +10,33 @@ mkdir -p $build/.profile.d
 mkdir -p $cache
 
 install_backplane() {
-	echo "-----> Installing Backplane Agent"
-	name=backplane-stable-linux-amd64.tgz
-	curl -s https://bin.equinox.io/c/jWahGASjoRq/$name > $cache/$name
-	tar xf $cache/$name -C $build/bin
+  echo "-----> Installing Backplane Agent"
+  name=backplane-stable-linux-amd64.tgz
+  curl -s https://bin.equinox.io/c/jWahGASjoRq/$name > $cache/$name
+  tar xf $cache/$name -C $build/bin
 }
 
 install_backplane
 
 echo "-----> Writing .profile.d/backplane.sh"
 cat <<-EOF > $build/.profile.d/backplane.sh
-BACKPLANE_LABELS="\$BACKPLANE_LABELS, heroku=true"
-\$HOME/bin/backplane connect "\$BACKPLANE_LABELS" http://127.0.0.1:\$PORT &
+
+BACKPLANE_ALLOW_PROCESS_TYPE=\${BACKPLANE_ALLOW_PROCESS_TYPE:-web,www}
+echo "-----> Backplane Agent whitelists 'web' and 'www' process types by default."
+echo "       Use enviroment variable BACKPLANE_ALLOW_PROCESS_TYPE to whitelist alternate process types.";
+echo "       Example: BACKPLANE_ALLOW_PROCESS_TYPE=internal,external";
+echo "-----> Backplane Agent whitelisted process types: \$BACKPLANE_ALLOW_PROCESS_TYPE";
+
+IFS=", " read -r -a array <<< "\$BACKPLANE_ALLOW_PROCESS_TYPE"
+for element in "\${array[@]}"
+do
+  if [ "\$element" == "\$CURRENT_PROCESS_TYPE" ]; then
+    echo "-----> Starting Backplane Agent for \$BACKPLANE_LABELS"
+    BACKPLANE_LABELS="\$BACKPLANE_LABELS, heroku=true"
+    \$HOME/bin/backplane connect "\$BACKPLANE_LABELS" http://127.0.0.1:\$PORT &
+    exit 0
+  fi
+done
+
+echo '-----> Skipping start of Backplane Agent!'
 EOF
