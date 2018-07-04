@@ -20,7 +20,9 @@ install_backplane() {
 
 install_backplane
 
-whitelist=$(cat $envDir/BACKPLANE_ALLOW_PROCESS_TYPES 2>/dev/null)
+if [ -f $envDir/BACKPLANE_ALLOW_PROCESS_TYPES ]; then 
+  whitelist=$(cat $envDir/BACKPLANE_ALLOW_PROCESS_TYPES)
+fi
 whitelist=${whitelist:-web,www}
 echo "-----> Backplane Agent whitelists 'web' and 'www' process types by default."
 echo "       Use enviroment variable BACKPLANE_ALLOW_PROCESS_TYPES to whitelist alternate process types."
@@ -29,7 +31,11 @@ echo ""
 echo "-----> Backplane Agent whitelisted process types: $whitelist"
 echo ""
 
-labels=$(cat $envDir/BACKPLANE_LABELS 2>/dev/null)
+if [ -f $envDir/BACKPLANE_LABELS ]; then 
+  labels="$(cat $envDir/BACKPLANE_LABELS), heroku=true"
+else
+  labels="heroku=true"
+fi
 echo "-----> Backplane labels: $labels"
 echo ""
 
@@ -42,9 +48,8 @@ IFS=", " read -r -a array <<< "$whitelist"
 for element in "\${array[@]}"
 do
   if [ "\$element" == "\$CURRENT_PROCESS_TYPE" ]; then
-    BACKPLANE_LABELS="\$BACKPLANE_LABELS, heroku=true"
-    echo "[backplane] Starting Backplane Agent for \"\$BACKPLANE_LABEL\""
-    \$HOME/bin/backplane connect "\$BACKPLANE_LABELS" http://127.0.0.1:\$PORT &
+    echo "[backplane] Starting Backplane Agent for \"$labels\""
+    \$HOME/bin/backplane connect "$labels" http://127.0.0.1:\$PORT &
     exit 0
   fi
 done
