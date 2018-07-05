@@ -39,7 +39,8 @@ You are now ready to deploy:
 > NOTE: You may now turn off inbound traffic from Heroku's router by changing
 > your process name from `web` to `www` or whatever you see fit. Each process
 > should still bind to `127.0.0.1:$PORT` where the backplane agent will be
-> looking for it.
+> looking for it. However, if you do change the process name, be sure to whitelist
+> it with the BACKPLANE_PROCESS_ALLOW environment variable.
 
 Test http://myendpoint.com.
 
@@ -47,13 +48,13 @@ For more information on setting up backplane see `backplane help`.
 
 ### Whitelist process types
 
-Use enviroment variable `BACKPLANE_ALLOW_PROCESS_TYPES` to whitelist process types
-which serve http traffic. If left unset, the process types 'web' and 'www' will
-be whitelisted by default.
+Use enviroment variable `BACKPLANE_PROCESS_ALLOW` to whitelist process types
+which serve http traffic. If left unset, the process type 'web' will be whitelisted 
+by default.
 
 Example:
 
-    $ heroku config:set BACKPLANE_ALLOW_PROCESS_TYPES=internalweb,externalweb
+    $ heroku config:set BACKPLANE_PROCESS_ALLOW=www,admin
 
 ## Known Issues
 

@@ -20,13 +20,13 @@ install_backplane() {
 
 install_backplane
 
-if [ -f $envDir/BACKPLANE_ALLOW_PROCESS_TYPES ]; then 
-  whitelist=$(cat $envDir/BACKPLANE_ALLOW_PROCESS_TYPES)
+if [ -f $envDir/BACKPLANE_PROCESS_ALLOW ]; then 
+  whitelist=$(cat $envDir/BACKPLANE_PROCESS_ALLOW)
 fi
-whitelist=${whitelist:-web,www}
-echo "-----> Backplane Agent whitelists 'web' and 'www' process types by default."
-echo "       Use enviroment variable BACKPLANE_ALLOW_PROCESS_TYPES to whitelist alternate process types."
-echo "       Example: BACKPLANE_ALLOW_PROCESS_TYPES=internal,external"
+whitelist=${whitelist:-web}
+echo "-----> Backplane Agent whitelists the 'web' process type by default."
+echo "       Use enviroment variable BACKPLANE_PROCESS_ALLOW to whitelist alternate process types."
+echo "       Example: BACKPLANE_PROCESS_ALLOW=internal,external"
 echo ""
 echo "-----> Backplane Agent whitelisted process types: $whitelist"
 echo ""
@@ -35,7 +35,7 @@ echo "-----> Writing .profile.d/backplane.sh"
 cat <<-EOF > $buildDir/.profile.d/backplane.sh
 allowed="no"
 CURRENT_PROCESS_TYPE=\${DYNO%.*}
-IFS=", " read -r -a array <<< "\${BACKPLANE_ALLOW_PROCESS_TYPES:-web,www}"
+IFS=", " read -r -a array <<< "\${BACKPLANE_PROCESS_ALLOW:-web}"
 for element in "\${array[@]}"
 do
   if [ "\$element" == "\$CURRENT_PROCESS_TYPE" ]; then
