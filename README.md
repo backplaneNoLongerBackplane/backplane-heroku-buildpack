@@ -49,7 +49,7 @@ For more information on setting up backplane see `backplane help`.
 ### Whitelist process types
 
 Use enviroment variable `BACKPLANE_PROCESS_ALLOW` to whitelist process types
-which serve http traffic. If left unset, the process type 'web' will be whitelisted 
+which serve http traffic. If left unset, the process type 'web' and 'www' will be whitelisted 
 by default.
 
 Example:
