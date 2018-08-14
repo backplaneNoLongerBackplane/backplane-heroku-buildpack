@@ -2,24 +2,51 @@
 
 set -e
 
-build=$1
-cache=$2
+buildDir=$1
+cacheDir=$2
+envDir=$3
 
-mkdir -p $build/bin
-mkdir -p $build/.profile.d
-mkdir -p $cache
+mkdir -p $buildDir/bin
+mkdir -p $buildDir/.profile.d
+mkdir -p $cacheDir
+mkdir -p $envDir
 
 install_backplane() {
-	echo "-----> Installing Backplane Agent"
-	name=backplane-stable-linux-amd64.tgz
-	curl -s https://bin.equinox.io/c/jWahGASjoRq/$name > $cache/$name
-	tar xf $cache/$name -C $build/bin
+  echo "-----> Installing Backplane Agent"
+  name=backplane-stable-linux-amd64.tgz
+  curl -s https://bin.equinox.io/c/jWahGASjoRq/$name > $cacheDir/$name
+  tar xf $cacheDir/$name -C $buildDir/bin
 }
 
 install_backplane
 
+if [ -f $envDir/BACKPLANE_PROCESS_ALLOW ]; then 
+  whitelist=$(cat $envDir/BACKPLANE_PROCESS_ALLOW)
+fi
+whitelist=${whitelist:-web}
+echo "-----> Backplane Agent whitelists the 'web' and 'www' process types by default."
+echo "       Use enviroment variable BACKPLANE_PROCESS_ALLOW to whitelist alternate process types."
+echo "       Example: BACKPLANE_PROCESS_ALLOW=internal,external"
+echo ""
+echo "-----> Backplane Agent whitelisted process types: $whitelist"
+echo ""
+
 echo "-----> Writing .profile.d/backplane.sh"
-cat <<-EOF > $build/.profile.d/backplane.sh
-BACKPLANE_LABELS="\$BACKPLANE_LABELS, heroku=true"
-\$HOME/bin/backplane connect "\$BACKPLANE_LABELS" http://127.0.0.1:\$PORT &
+cat <<-EOF > $buildDir/.profile.d/backplane.sh
+allowed="no"
+CURRENT_PROCESS_TYPE=\${DYNO%.*}
+IFS=", " read -r -a array <<< "\${BACKPLANE_PROCESS_ALLOW:-web,www}"
+for element in "\${array[@]}"
+do
+  if [ "\$element" == "\$CURRENT_PROCESS_TYPE" ]; then
+    allowed="yes"
+    break
+  fi
+done
+if [ "\$allowed" == "yes" ]; then
+  echo "[backplane] Starting Backplane Agent"
+  \$HOME/bin/backplane connect "\$BACKPLANE_LABELS,heroku=true" http://127.0.0.1:\$PORT &
+else
+  echo '[backplane] Skipping start of Backplane Agent'
+fi
 EOF
